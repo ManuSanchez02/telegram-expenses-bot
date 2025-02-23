@@ -1,13 +1,10 @@
 from enum import Enum
 from typing import TypedDict
 
-from dotenv import load_dotenv
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
-
-load_dotenv()
 
 
 class Category(Enum):
@@ -30,12 +27,8 @@ class ExpenseResponseModel(BaseModel):
         description="Description of the expense",
         default=None,
     )
-    price: float | None = Field(
-        title="Price", description="Price of the expense", default=None
-    )
-    category: Category | None = Field(
-        title="Category", description="Category of the expense", default=None
-    )
+    price: float | None = Field(title="Price", description="Price of the expense", default=None)
+    category: Category | None = Field(title="Category", description="Category of the expense", default=None)
 
 
 class ExpenseResponseData(TypedDict):
