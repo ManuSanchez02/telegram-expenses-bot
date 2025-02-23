@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, TypedDict
+from typing import TypedDict
 
 from dotenv import load_dotenv
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -25,23 +25,23 @@ class Category(Enum):
 
 
 class ExpenseResponseModel(BaseModel):
-    description: Optional[str] = Field(
+    description: str | None = Field(
         title="Description",
         description="Description of the expense",
         default=None,
     )
-    price: Optional[float] = Field(
+    price: float | None = Field(
         title="Price", description="Price of the expense", default=None
     )
-    category: Optional[Category] = Field(
+    category: Category | None = Field(
         title="Category", description="Category of the expense", default=None
     )
 
 
 class ExpenseResponseData(TypedDict):
-    description: Optional[str]
-    price: Optional[float]
-    category: Optional[Category]
+    description: str | None
+    price: float | None
+    category: Category | None
 
 
 class IncompleteExpense(Exception):
