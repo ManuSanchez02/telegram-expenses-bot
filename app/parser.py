@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Optional, TypedDict
 
 from dotenv import load_dotenv
+from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
@@ -57,7 +58,7 @@ class ExpenseJsonOutputParser(JsonOutputParser):
 
 
 class ExpenseParser:
-    def __init__(self, model, parser):
+    def __init__(self, model: BaseChatModel, parser: JsonOutputParser):
         prompt = PromptTemplate(
             template="""
             You are an expense parser.
