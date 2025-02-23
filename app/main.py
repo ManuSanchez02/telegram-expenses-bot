@@ -1,15 +1,25 @@
-from typing import Union
-
 from fastapi import FastAPI
+from langchain_ai21 import ChatAI21
+from pydantic import BaseModel
+
+from app.parser import ExpenseJsonOutputParser, ExpenseParser
 
 app = FastAPI()
 
+json_parser = ExpenseJsonOutputParser()
+model = ChatAI21(model="jamba-instruct")
+parser = ExpenseParser(model, json_parser)
+
+
+class UserMessage(BaseModel):
+    text: str
+
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def health_check():
+    return {"status": "ok"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.post("/parse")
+async def parse_expense(message: UserMessage):
+    return await parser.parse(message.text)

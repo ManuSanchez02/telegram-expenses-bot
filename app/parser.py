@@ -80,8 +80,8 @@ class ExpenseParser:
     def _is_complete(self, res: ExpenseResponseData) -> bool:
         return res["description"] is not None and self._is_valid(res)
 
-    def parse(self, query) -> ExpenseResponseData:
-        res: ExpenseResponseData = self.chain.invoke({"query": query})
+    async def parse(self, query) -> ExpenseResponseData:
+        res: ExpenseResponseData = await self.chain.ainvoke({"query": query})
         if not self._is_complete(res):
             raise IncompleteExpense()
         elif not self._is_valid(res):
