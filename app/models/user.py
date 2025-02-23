@@ -14,3 +14,6 @@ class User(BaseModel):
     telegram_id: Mapped[str] = mapped_column(unique=True)
 
     expenses: Mapped["Expense"] = relationship(back_populates="user")
+
+    def __init__(self, telegram_id: str):
+        self.telegram_id = telegram_id

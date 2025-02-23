@@ -20,3 +20,9 @@ class Expense(BaseModel):
     added_at: Mapped[datetime] = mapped_column(default=datetime.now)
 
     user: Mapped["User"] = relationship(back_populates="expenses")
+
+    def __init__(self, user_id: int, description: str, amount: float, category: str):
+        self.user_id = user_id
+        self.description = description
+        self.amount = amount
+        self.category = category
