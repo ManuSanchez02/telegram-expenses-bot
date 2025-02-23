@@ -115,7 +115,6 @@ class Database(metaclass=_DatabaseMeta):
 
         """
         if cls._engine is None:
-            print(current_task())
             cls._engine = create_async_engine(database_url)
             cls._session_factory = async_scoped_session(
                 async_sessionmaker(cls._engine),
