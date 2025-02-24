@@ -1,4 +1,6 @@
+import logging
 import os
+import secrets
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -8,8 +10,7 @@ from sqlalchemy import select
 
 from app.auth import validate_api_key
 from app.database import SessionDep, db
-from app.models.expense import Expense
-from app.models.user import User
+from app.models import ApiKey, Expense, User
 from app.parser import ExpenseJsonOutputParser, ExpenseParser
 from app.schemas import UserMessage
 
@@ -20,15 +21,33 @@ POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 POSTGRES_DB = os.getenv("POSTGRES_DB")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}"
+DEFAULT_API_KEY_LENGTH = 32
 
 json_parser = ExpenseJsonOutputParser()
 model = ChatAI21(model="jamba-instruct")
 parser = ExpenseParser(model, json_parser)
 
+logger = logging.getLogger("uvicorn.error")
+
+
+async def create_api_key():
+    session = await db.get_session()
+    api_key_query = select(ApiKey)
+    api_keys = await session.execute(api_key_query)
+    api_keys = api_keys.scalars().first()
+    if not api_keys:
+        key = secrets.token_urlsafe(DEFAULT_API_KEY_LENGTH)
+        api_key = ApiKey(key=key, description="Default API key")
+        session.add(api_key)
+        await session.commit()
+        logger.info(f'Default API key created: "{key}"')
+    await session.close()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db.initialize(POSTGRES_URL)
+    await create_api_key()
     yield
 
 

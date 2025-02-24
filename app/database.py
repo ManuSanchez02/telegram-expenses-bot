@@ -19,8 +19,6 @@ from asyncio import current_task
 from typing import Annotated
 
 from fastapi import Depends
-from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
@@ -122,25 +120,6 @@ class Database(metaclass=_DatabaseMeta):
                 async_sessionmaker(cls._engine),
                 scopefunc=current_task,
             )
-
-    @classmethod
-    async def test_connection(cls):
-        """Test the connection to the database.
-
-        The database must be initialized before calling this method.
-
-        Returns:
-            connected: A boolean indicating if the connection was successful.
-        """
-        if cls._engine is None:
-            return False
-
-        try:
-            async with cls.get_session() as session:
-                await session.execute(text("SELECT 1"))
-        except (ConnectionError, SQLAlchemyError):
-            return False
-        return True
 
     @classmethod
     async def get_session(cls) -> AsyncSession:
