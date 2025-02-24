@@ -7,10 +7,13 @@ dotenv.config();
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const BOT_SERVICE_API_KEY = process.env.BOT_SERVICE_API_KEY;
+const BOT_SERVICE_URL = process.env.BOT_SERVICE_URL;
 if (!BOT_TOKEN) {
   throw new Error('BOT_TOKEN is required but was not provided');
 } else if (!BOT_SERVICE_API_KEY) {
   throw new Error('BOT_SERVICE_API_KEY is required but was not provided');
+} else if (!BOT_SERVICE_URL) {
+  throw new Error('BOT_SERVICE_URL is required but was not provided');
 }
 // Replace with your bot token
 const bot = new Telegraf(BOT_TOKEN);
@@ -24,7 +27,7 @@ bot.help((ctx) => ctx.reply('Just type what you spent money on and how much mone
 
 // Handle text messages
 bot.on(message("text"), async (ctx) => {
-  const res = await fetch('http://localhost:8000/parse', {
+  const res = await fetch(`${BOT_SERVICE_URL}/parse`, {
     method: 'POST',
     body: JSON.stringify({ text: ctx.message.text, telegram_id: ctx.message.from.id.toString() }),
     headers: {
