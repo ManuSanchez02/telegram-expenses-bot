@@ -1,14 +1,13 @@
 import os
-from typing import Annotated
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.concurrency import asynccontextmanager
 from langchain_ai21 import ChatAI21
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db import Database
+from app.auth import validate_api_key
+from app.db import SessionDep, db
 from app.models.expense import Expense
 from app.models.user import User
 from app.parser import ExpenseJsonOutputParser, ExpenseParser
@@ -28,11 +27,6 @@ POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}"
 
 
-db = Database()
-
-SessionDep = Annotated[AsyncSession, Depends(db.get_session)]
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db.initialize(POSTGRES_URL)
@@ -48,14 +42,17 @@ async def health_check():
     return {"status": "ok"}
 
 
-@app.post("/parse")
-async def parse_expense(message: UserMessage, session: SessionDep):
+@app.post("/parse", dependencies=[Depends(validate_api_key)])
+async def parse_expense(
+    message: UserMessage,
+    session: SessionDep,
+):
     telegram_id = message.telegram_id
     user_query = select(User).where(User.telegram_id == telegram_id)
     user = await session.execute(user_query)
-    user = user.first()
+    user = user.scalars().first()
     if not user:
-        raise HTTPException(status_code=403, detail="User not in whitelist")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not in whitelist")
 
     res = await parser.parse(message.text)
     expense = Expense(

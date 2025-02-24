@@ -16,7 +16,9 @@ Example usage:
 
 import os
 from asyncio import current_task
+from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
@@ -153,3 +155,9 @@ class Database(metaclass=_DatabaseMeta):
         if cls._session_factory is None:
             raise ConnectionError("Database is not initialized. Call initialize() first.")
         return cls._session_factory()
+
+
+db = Database()
+
+
+SessionDep = Annotated[AsyncSession, Depends(db.get_session)]
