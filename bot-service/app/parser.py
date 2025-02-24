@@ -49,12 +49,28 @@ class InvalidExpense(Exception):
 
 
 class ExpenseJsonOutputParser(JsonOutputParser):
+    """
+    Expense JSON output parser that takes in the JSON output and returns a structured data of the expense.
+    """
     def __init__(self):
         super().__init__(pydantic_object=ExpenseResponseModel)
 
 
 class ExpenseParser:
+    """
+    Expense parser that takes in a query and returns a structured data of the expense.
+    
+    Attributes:
+        chain: The chain of models and parsers to process the query.
+    """
     def __init__(self, model: BaseChatModel, parser: JsonOutputParser):
+        """
+        Initialize the ExpenseParser with the model and parser.
+        
+        Args:
+            model: The model to process the query.
+            parser: The parser to parse the model output.
+        """
         prompt = PromptTemplate(
             template="""
             You are an expense parser.
@@ -74,6 +90,14 @@ class ExpenseParser:
         return res["description"] is not None and res["price"] is not None and res["category"] is not None
 
     async def parse(self, query) -> ExpenseResponseData:
+        """
+        Parse the query into structured data of the expense.
+        
+        Args:
+            query: The query to parse.
+            
+        Returns:
+            The structured data of the expense as ExpenseResponseData."""
         res: ExpenseResponseData = await self.chain.ainvoke({"query": query})
         logger.debug(f"Expense parsed: {res}")
         if not self._is_valid(res):
