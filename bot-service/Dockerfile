@@ -7,7 +7,6 @@ EXPOSE 5000
 
 # Copy the application into the container.
 COPY . /app
-COPY .env /app/.env
 
 # Install the application dependencies.
 WORKDIR /app
