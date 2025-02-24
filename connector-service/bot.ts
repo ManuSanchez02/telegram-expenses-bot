@@ -2,7 +2,6 @@ import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 import dotenv from "dotenv";
 import crypto from "crypto";
-import express from 'express';
 
 dotenv.config();
 
@@ -16,21 +15,6 @@ if (!BOT_TOKEN) {
 } else if (!BOT_SERVICE_URL) {
   throw new Error('BOT_SERVICE_URL is required but was not provided');
 }
-
-const app = express();
-app.use(express.json());
-
-// Telegram will send updates to this route
-app.post(`/bot${BOT_TOKEN}`, (req, res) => {
-  console.log('Received update:', req.body);
-  bot.handleUpdate(req.body);
-  res.sendStatus(200);
-});
-
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Connector service is running on port ${process.env.PORT || 3000}`);
-});
-
 // Replace with your bot token
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -74,7 +58,7 @@ if (process.env.WEBHOOK_DOMAIN) {
   bot.launch({
     webhook: {
       domain: process.env.WEBHOOK_DOMAIN,
-      port: parseInt(process.env.PORT || '443'),
+      port: parseInt(process.env.WEBHOOK_PORT || '443'),
       secretToken: crypto.randomBytes(64).toString("hex"),
     }
   });
