@@ -15,7 +15,7 @@ export const processExpense = async (text: string, telegramId: string) => {
     if (!response.ok) {
       const errorBody = await response.json();
       logger.error(
-        `API Error ${response.status}: ${JSON.stringify(errorBody)}`
+        `API Error ${response.status}: ${JSON.stringify(errorBody)}`,
       );
 
       if (errorBody?.detail?.error === "incomplete_expense") {
@@ -31,8 +31,12 @@ export const processExpense = async (text: string, telegramId: string) => {
 
     const responseBody = await response.json();
     return responseBody.message;
-  } catch (error: any) {
-    logger.error(`Unexpected Error: ${error.message}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(`Unexpected Error: ${error.message}`);
+    } else {
+      logger.error("An unknown error occurred while processing the expense");
+    }
     return "An unexpected error occurred. Please try again later.";
   }
 };

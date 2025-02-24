@@ -7,7 +7,7 @@ const missingVars = requiredEnvVars.filter((key) => !process.env[key]);
 
 if (missingVars.length > 0) {
   throw new Error(
-    `Missing required environment variables: ${missingVars.join(", ")}`
+    `Missing required environment variables: ${missingVars.join(", ")}`,
   );
 }
 
@@ -16,5 +16,5 @@ export const BOT_CONFIG = {
   API_KEY: process.env.BOT_SERVICE_API_KEY || "",
   SERVICE_URL: process.env.BOT_SERVICE_URL,
   WEBHOOK_DOMAIN: process.env.WEBHOOK_DOMAIN || null,
-  WEBHOOK_PORT: parseInt(process.env.WEBHOOK_PORT || "443", 10),
+  PORT: parseInt(process.env.PORT || "3000", 10),
 };
