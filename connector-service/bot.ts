@@ -30,12 +30,14 @@ bot.on(message("text"), async (ctx) => {
       'Content-Type': 'application/json',
       'X-API-Key': BOT_SERVICE_API_KEY
     }
+
   });
   const body = await res.json();
   if (!res.ok) {
-    console.error(body, body.detail.error);
-    if (body.detail.error === 'incomplete_expense') {
+    if (body.detail?.error === 'incomplete_expense') {
       ctx.reply('Please provide both the expense and the amount spent.');
+    } else if (body.detail?.error === 'user_not_found') {
+      ctx.reply('You are not whitelisted to use this bot. Please contact the bot owner.');
     }
     return;
   }

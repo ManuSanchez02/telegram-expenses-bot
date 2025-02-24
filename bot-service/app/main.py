@@ -71,7 +71,10 @@ async def parse_expense(
     user = await session.execute(user_query)
     user = user.scalars().first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not in whitelist")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": "user_not_found", "message": "User not in whitelist"},
+        )
 
     try:
         res = await parser.parse(message.text)
