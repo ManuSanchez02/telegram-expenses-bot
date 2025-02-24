@@ -7,7 +7,7 @@ from langchain_ai21 import ChatAI21
 from sqlalchemy import select
 
 from app.auth import validate_api_key
-from app.db import SessionDep, db
+from app.database import SessionDep, db
 from app.models.expense import Expense
 from app.models.user import User
 from app.parser import ExpenseJsonOutputParser, ExpenseParser

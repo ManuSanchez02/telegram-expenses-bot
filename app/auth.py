@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from app.models import ApiKey
 
-from .db import SessionDep
+from .database import SessionDep
 
 api_key_header = APIKeyHeader(name="X-API-Key")
 
