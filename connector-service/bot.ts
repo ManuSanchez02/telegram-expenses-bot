@@ -52,7 +52,7 @@ if (process.env.WEBHOOK_DOMAIN) {
   bot.launch({
     webhook: {
       domain: process.env.WEBHOOK_DOMAIN,
-      port: parseInt(process.env.WEBHOOK_PORT || '3000'),
+      port: parseInt(process.env.WEBHOOK_PORT || '443'),
       secretToken: crypto.randomBytes(64).toString("hex"),
     }
   });
@@ -67,4 +67,4 @@ if (process.env.WEBHOOK_DOMAIN) {
 process.once('SIGINT', () => bot.stop('SIGINT'))
 process.once('SIGTERM', () => bot.stop('SIGTERM'))
 
-console.log('Bot is running on');
+console.log('Bot is running...');
