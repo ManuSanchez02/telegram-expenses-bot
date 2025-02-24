@@ -2,13 +2,15 @@ import os
 from typing import Annotated
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.concurrency import asynccontextmanager
 from langchain_ai21 import ChatAI21
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import Database
 from app.models.expense import Expense
+from app.models.user import User
 from app.parser import ExpenseJsonOutputParser, ExpenseParser
 from app.schemas import UserMessage
 
@@ -48,6 +50,13 @@ async def health_check():
 
 @app.post("/parse")
 async def parse_expense(message: UserMessage, session: SessionDep):
+    telegram_id = message.telegram_id
+    user_query = select(User).where(User.telegram_id == telegram_id)
+    user = await session.execute(user_query)
+    user = user.first()
+    if not user:
+        raise HTTPException(status_code=403, detail="User not in whitelist")
+
     res = await parser.parse(message.text)
     expense = Expense(
         user_id=1,
@@ -57,4 +66,4 @@ async def parse_expense(message: UserMessage, session: SessionDep):
     )
     session.add(expense)
     await session.commit()
-    return f"{res['category']} expense added ✅"
+    return {"message": f"{res['category']} expense added ✅"}
