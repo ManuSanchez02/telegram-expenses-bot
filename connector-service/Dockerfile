@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-EXPOSE 443 80 3000 8443
+EXPOSE 3000
 
 WORKDIR /app
 
