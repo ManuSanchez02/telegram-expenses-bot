@@ -4,7 +4,9 @@
   "description": "Connector service for a telegram bot",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon --exec tsx bot.ts"
+    "start:dev": "nodemon --exec tsx bot.ts",
+    "build": "tsc",
+    "start": "node dist/bot.js"
   },
   "author": "Manuel Sanchez",
   "license": "ISC",
