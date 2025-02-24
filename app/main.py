@@ -11,7 +11,7 @@ from sqlalchemy import select
 from app.auth import validate_api_key
 from app.database import SessionDep, db
 from app.models import ApiKey, Expense, User
-from app.parser import ExpenseJsonOutputParser, ExpenseParser
+from app.parser import ExpenseJsonOutputParser, ExpenseParser, IncompleteExpense, InvalidExpense
 from app.schemas import UserMessage
 
 load_dotenv()
@@ -22,12 +22,14 @@ POSTGRES_DB = os.getenv("POSTGRES_DB")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}/{POSTGRES_DB}"
 DEFAULT_API_KEY_LENGTH = 32
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 json_parser = ExpenseJsonOutputParser()
 model = ChatAI21(model="jamba-instruct")
 parser = ExpenseParser(model, json_parser)
 
 logger = logging.getLogger("uvicorn.error")
+logger.setLevel(LOG_LEVEL)
 
 
 async def create_api_key():
@@ -71,7 +73,27 @@ async def parse_expense(
     if not user:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not in whitelist")
 
-    res = await parser.parse(message.text)
+    try:
+        res = await parser.parse(message.text)
+    except IncompleteExpense:
+        logger.error("Incomplete expense query")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "incomplete_expense", "message": "Incomplete expense query"},
+        )
+    except InvalidExpense:
+        logger.error("Invalid expense query")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": "invalid_expense", "message": "Invalid expense query"},
+        )
+    except Exception as e:
+        logger.error(f"Error parsing expense query: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"error": "internal_error", "message": "Error parsing expense query"},
+        )
+
     expense = Expense(
         user_id=1,
         description=res["description"],

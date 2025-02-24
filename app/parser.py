@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from typing import TypedDict
 
@@ -5,6 +6,8 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger("uvicorn.error")
 
 
 class Category(Enum):
@@ -68,15 +71,13 @@ class ExpenseParser:
         self.chain = prompt | model | parser
 
     def _is_valid(self, res: ExpenseResponseData) -> bool:
-        return res["price"] is not None and res["category"] is not None
-
-    def _is_complete(self, res: ExpenseResponseData) -> bool:
-        return res["description"] is not None and self._is_valid(res)
+        return res["description"] is not None and res["price"] is not None and res["category"] is not None
 
     async def parse(self, query) -> ExpenseResponseData:
         res: ExpenseResponseData = await self.chain.ainvoke({"query": query})
-        if not self._is_complete(res):
-            raise IncompleteExpense()
-        elif not self._is_valid(res):
+        logger.debug(f"Expense parsed: {res}")
+        if not self._is_valid(res):
+            if res["description"] or res["price"] or res["category"]:
+                raise IncompleteExpense()
             raise InvalidExpense()
         return res
