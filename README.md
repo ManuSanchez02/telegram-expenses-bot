@@ -69,3 +69,7 @@ npm run build && npm run start
 ```
 
 After running these commands, the bot should be up and able to reply to messages.
+
+## Usage
+
+In order to use the bot, you can directly message it on telegram. However, keep in mind that if you are not whitelisted, the bot will not respond to your messages.
