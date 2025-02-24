@@ -93,7 +93,7 @@ bot-service
 **`connector-service`**
 
 ```env
-BOT_SERVICE_URL=http;//bot-service
+BOT_SERVICE_URL=http;//bot-service:5000
 ```
 
 **`bot-service`**

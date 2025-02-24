@@ -37,7 +37,7 @@ const startBot = async () => {
   try {
     if (BOT_CONFIG.WEBHOOK_DOMAIN) {
       logger.info("Launching bot in webhook mode...");
-      bot.launch(
+      await bot.launch(
         {
           webhook: {
             domain: BOT_CONFIG.WEBHOOK_DOMAIN,
@@ -49,7 +49,7 @@ const startBot = async () => {
       );
     } else {
       logger.info("Launching bot in polling mode...");
-      bot.launch(() => logger.info("Bot is running..."));
+      await bot.launch(() => logger.info("Bot is running..."));
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
