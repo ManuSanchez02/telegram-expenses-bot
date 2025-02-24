@@ -12,7 +12,7 @@ COPY . /app
 WORKDIR /app
 RUN uv sync --frozen --no-cache
 
-RUN uv run alembic upgrade head
+RUN .venv/bin/python -m alembic upgrade head
 
 # Run the application.
 CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--port", "5000", "--host", "0.0.0.0"]
