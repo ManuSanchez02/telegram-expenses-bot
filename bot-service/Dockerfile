@@ -5,6 +5,8 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 EXPOSE 5000
 
+COPY ./start_server.sh /app/start_server.sh
+
 # Copy the application into the container.
 COPY . /app
 
@@ -12,7 +14,7 @@ COPY . /app
 WORKDIR /app
 RUN uv sync --frozen --no-cache
 
-RUN uv run alembic upgrade head
+# RUN 
 
 # Run the application.
-CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--port", "5000", "--host", "0.0.0.0"]
+CMD ["./start_server.sh"]
