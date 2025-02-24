@@ -1,6 +1,7 @@
 import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 import dotenv from "dotenv";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -44,8 +45,21 @@ bot.on(message("text"), async (ctx) => {
   ctx.reply(body.message);
 });
 
+if (process.env.WEBHOOK_DOMAIN) {
+  bot.launch({
+    webhook: {
+      domain: process.env.WEBHOOK_DOMAIN,
+      port: parseInt(process.env.WEBHOOK_PORT || '3000'),
+      secretToken: crypto.randomBytes(64).toString("hex"),
+    }
+  });
+
+} else {
+  bot.launch();
+}
+
+
 // Start bot
-bot.launch();
 
 process.once('SIGINT', () => bot.stop('SIGINT'))
 process.once('SIGTERM', () => bot.stop('SIGTERM'))
