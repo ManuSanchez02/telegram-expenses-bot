@@ -2,9 +2,8 @@ from fastapi import HTTPException, Security, status
 from fastapi.security import APIKeyHeader
 from sqlalchemy import select
 
-from app.models import ApiKey
-
 from .database import SessionDep
+from .models import ApiKey
 
 api_key_header = APIKeyHeader(name="X-API-Key")
 
