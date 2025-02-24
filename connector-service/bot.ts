@@ -27,25 +27,31 @@ bot.help((ctx) => ctx.reply('Just type what you spent money on and how much mone
 
 // Handle text messages
 bot.on(message("text"), async (ctx) => {
-  const res = await fetch(`${BOT_SERVICE_URL}/parse`, {
-    method: 'POST',
-    body: JSON.stringify({ text: ctx.message.text, telegram_id: ctx.message.from.id.toString() }),
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-Key': BOT_SERVICE_API_KEY
-    }
+  console.log('Received message:', ctx.message.text);
+  try {
+    const res = await fetch(`${BOT_SERVICE_URL}/parse`, {
+      method: 'POST',
+      body: JSON.stringify({ text: ctx.message.text, telegram_id: ctx.message.from.id.toString() }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': BOT_SERVICE_API_KEY
+      }
 
-  });
-  const body = await res.json();
-  if (!res.ok) {
-    if (body.detail?.error === 'incomplete_expense') {
-      ctx.reply('Please provide both the expense and the amount spent.');
-    } else if (body.detail?.error === 'user_not_found') {
-      ctx.reply('You are not whitelisted to use this bot. Please contact the bot owner.');
+    });
+    const body = await res.json();
+    if (!res.ok) {
+      if (body.detail?.error === 'incomplete_expense') {
+        ctx.reply('Please provide both the expense and the amount spent.');
+      } else if (body.detail?.error === 'user_not_found') {
+        ctx.reply('You are not whitelisted to use this bot. Please contact the bot owner.');
+      }
+      return;
     }
-    return;
+    ctx.reply(body.message);
   }
-  ctx.reply(body.message);
+  catch (error) {
+    console.error('Error:', error);
+  }
 });
 
 if (process.env.WEBHOOK_DOMAIN) {
