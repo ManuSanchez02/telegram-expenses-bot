@@ -1,0 +1,20 @@
+{
+  "name": "connector-service",
+  "version": "1.0.0",
+  "description": "Connector service for a telegram bot",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon --exec tsx bot.ts"
+  },
+  "author": "Manuel Sanchez",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^22.13.5",
+    "dotenv": "^16.4.7",
+    "nodemon": "^3.1.9",
+    "telegraf": "^4.16.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  },
+  "type": "module"
+}
