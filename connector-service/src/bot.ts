@@ -24,19 +24,17 @@ const startBot = async () => {
   try {
     if (BOT_CONFIG.WEBHOOK_DOMAIN) {
       logger.info("Launching bot in webhook mode...");
-      await bot.launch({
+      bot.launch({
         webhook: {
           domain: BOT_CONFIG.WEBHOOK_DOMAIN,
           port: BOT_CONFIG.WEBHOOK_PORT,
           secretToken: crypto.randomBytes(64).toString("hex"),
         },
-      });
+      }, () => logger.info("Bot is running..."));
     } else {
       logger.info("Launching bot in polling mode...");
-      await bot.launch();
+      bot.launch(() => logger.info("Bot is running..."));
     }
-
-    logger.info("Bot is running...");
   } catch (error: any) {
     logger.error(`Error launching bot: ${error.message}`);
   }
