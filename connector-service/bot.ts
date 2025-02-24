@@ -67,4 +67,4 @@ if (process.env.WEBHOOK_DOMAIN) {
 process.once('SIGINT', () => bot.stop('SIGINT'))
 process.once('SIGTERM', () => bot.stop('SIGTERM'))
 
-console.log('Bot is running...');
+console.log('Bot is running on');
