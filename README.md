@@ -152,3 +152,9 @@ In order to use the bot, you can directly message it on telegram. However, keep 
 Messages sent to the bot are expected to be expense related. For example: "Pizza 10 bucks". This should be parsed using a LLM and stored in the `expenses` table.
 
 In the hypothetical case that you send an incomplete message, the bot will ask you for the missing information. However, if you send a non-expense related message, the bot will not respond.
+
+## Try It Out
+
+This bot is deployed on Render, and you can try it out using this link: [Expense Tracker Bot](https://t.me/darwinai_expense_prod_bot).
+
+Note that you will need to be whitelisted in order to use the bot. If you are not, you can contact me and I will add you to the whitelist.
